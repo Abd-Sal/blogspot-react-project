@@ -1,0 +1,129 @@
+@import url(https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap);
+
+:root{
+    --main-bg-color: #6341AF;
+    --main-font: 'Roboto';
+    --main-font-color: #242424;
+    --white-font: #fff;
+    --footer-text-color: #8C94A3
+}
+*{
+    font-family: var(--main-font);
+}
+html, body, #root {
+    height: 100%;
+}
+body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #FFF;
+}
+img{
+    max-width: 100%;
+}
+ul{
+    padding-left: 0px;
+}
+li{
+    list-style-type: none;
+}
+ul li *{
+    text-decoration: none;
+}
+.text-white{
+    color: #fff;
+}
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+main {
+    flex: 1;
+}
+footer{
+    flex-shrink: 0;
+}
+.bg-main-color{
+    background-color: var(--main-bg-color);
+}
+.footer-desc{
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--footer-text-color);
+}
+.copy-write-bg{
+    background-color: #FEF3C7;
+}
+.copy-write-bg * {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--main-font-color);
+}
+.navlinks *{
+    font-size: 20px;
+    font-weight: 500;
+}
+.navlinks .active{
+    border-bottom: 2px solid #fff;
+}
+.social-media > *{
+    background-color: #363B4766;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    transition: all 500ms;
+}
+.social-media > *:hover{
+    background-color: #fff;
+    border-radius: 2px;
+}
+.main-footer-sec ul{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap: 8px;
+}
+.main-footer-sec ul li > *{
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--footer-text-color);
+}
+.main-footer-sec .has-hover li:hover > *::after{
+    content: '  >';
+    font-size: 16px;
+    font-weight: 700;
+}
+.main-footer-sec .has-hover li:hover > *{
+    color: #fff;
+    border-bottom: 2px solid #fff;
+}
+.main-footer-sec ul li:first-of-type{
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white-font);
+    margin-bottom: 25px;
+}
+
+.download-text > p{
+    font-size: 10px;
+    font-weight: 400;
+    color: #B7BAC7;
+}
+.store{
+    transition: all 400ms;
+}
+.store:hover{
+    background-color: #333 !important;
+}
+.store:hover > .download-text > *{
+    color: #fff !important;
+}
+.download-text > h4{
+    font-size: 20px;
+    font-weight: 500;
+    color: #3B3B3B;
+}
