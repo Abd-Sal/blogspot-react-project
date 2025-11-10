@@ -31,7 +31,7 @@ export const APIConfig = {
             HOW_DID_YOU_FIND_US: '/terms/hear'
         },
         TESTIMONIAL: '/testimonials',
-        FAQ: '/faq-list',
+        FAQ_LIST: '/faq-list',
         GET_CSRF_TOKEN: '/session/token'
     }
 }
