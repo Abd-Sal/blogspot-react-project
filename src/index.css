@@ -5,7 +5,8 @@
     --main-font: 'Roboto';
     --main-font-color: #242424;
     --white-font: #fff;
-    --footer-text-color: #8C94A3
+    --footer-text-color: #8C94A3;
+    --login-bg-color: #F3EFFE;
 }
 *{
     font-family: var(--main-font);
@@ -62,7 +63,7 @@ footer{
     color: var(--main-font-color);
 }
 .navlinks *{
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 500;
 }
 .navlinks .active{
@@ -126,4 +127,59 @@ footer{
     font-size: 20px;
     font-weight: 500;
     color: #3B3B3B;
+}
+.btn-applian:hover,
+.btn-purple:hover{
+    border: 1px solid var(--main-bg-color) !important;
+    color: var(--main-bg-color) !important;
+    background-color: #fff !important;
+}
+.btn-applian{
+    transition: all 350ms;
+    background-color: #FEF3C7 !important;
+}
+.btn-purple{
+    transition: all 350ms;
+    background-color: var(--main-bg-color) !important;
+}
+.swiper-horizontal > .swiper-pagination-bullets, .swiper-pagination-horizontal.swiper-pagination-bullets {
+  & .swiper-pagination-bullet {
+    background-color: #a7a7a7;
+    width: 15px;
+    height: 15px;
+  }
+}
+.swiper-pagination-bullet-active{
+    width: 25px !important;
+    height: 25px !important;
+    background-color: #d4d4d4 !important;
+    border: 4px solid var(--main-bg-color);   
+}
+.hero-p{
+    color: #4E5566;
+}
+.btn-border-purple {
+    border:1px solid var(--main-bg-color);
+    color: var(--main-bg-color);
+}
+.login-bg-color{
+    background-color: var(--login-bg-color);
+}
+.social-auth-btn{
+    border-radius: 25% 50% 50% 25%;
+}
+.login-img{
+    left: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.remember-me,
+.agree-tems-and-conditions{
+    font-size: 14px;
+    font-weight: 400;
+    color: #6E7485;
+}
+.agree-tems-and-conditions *{
+    color: var(--main-bg-color);
+    cursor: pointer;
 }

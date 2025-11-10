@@ -14,7 +14,7 @@ const Navbar = () => {
                     </Col>
                     <Col lg={6} className="d-flex align-items-center">
                         <div className="w-100 d-flex justify-content-start align-items-center">
-                            <ul className="navlinks pt-3 w-100 d-flex justify-content-between align-items-center">
+                            <ul className="navlinks pt-3 w-100 d-flex justify-content-start align-items-center gap-4">
                                 <li>
                                     <NavLink className={`text-white ${((isActive) =>`${isActive ? 'active' : ''}`)}`} to={'/'}>Home</NavLink>
                                 </li>
