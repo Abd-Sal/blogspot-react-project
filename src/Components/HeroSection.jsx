@@ -1,15 +1,15 @@
 import { Col, Row } from "react-bootstrap"
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
-import React, { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
+import {  Autoplay, Pagination, A11y } from 'swiper/modules';
 import { NavLink } from "react-router-dom";
-
+import { AuthContext } from "../Context/AuthContext"
 const HeroSection = ({items}) => {
+    const {isInitialized} = useContext(AuthContext)
     const[article, setArticles] = useState([
         {
             id: 1,
@@ -40,10 +40,18 @@ const HeroSection = ({items}) => {
   return (
     <>
         <Swiper
-        modules={[Pagination, A11y]}
+        modules={[Autoplay, Pagination, A11y]}
         spaceBetween={50}
         slidesPerView={1}
         pagination={{ clickable: true }}
+        autoplay={{
+            delay: 2500,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+            waitForTransition: true,
+        }}
+        speed={1000}
+        loop={true}
         >
             {
                 article.length > 0 &&
@@ -58,7 +66,12 @@ const HeroSection = ({items}) => {
                                     <p className="hero-p">{item.brief_description}</p>
                                     <div className="d-flex justify-content-start align-items-center gap-4">
                                         <NavLink to={`articles/${items.id}`} className="btn btn-purple text-white pt-2 pb-2 ps-5 pe-5">Start Reading</NavLink>
-                                        <NavLink to={'/register'} className="btn btn-applian pt-2 pb-2 ps-5 pe-5">Create Account</NavLink>
+                                        {
+                                            isInitialized ?
+                                                ''
+                                            :
+                                                <NavLink to={'/register'} className="btn btn-applian pt-2 pb-2 ps-5 pe-5">Create Account</NavLink>
+                                        }
                                     </div>
                                 </div>
                             </Col>

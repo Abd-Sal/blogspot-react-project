@@ -47,7 +47,7 @@ export const UserService = {
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
     },
-    USER_PICTURE: function({username, password, csrfToken, data}){
+    USER_PICTURE: function({username, password, csrfToken, data, fileName}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.USER.USER_PICTURE}`
         return fetch(`${url}`,{
             method: 'POST',
@@ -55,7 +55,7 @@ export const UserService = {
                 'Content-Type': 'application/octet-stream',
                 'Authorization': Base64Converter(`${username}:${password}`),
                 'X-CSRF-Token': csrfToken,
-                'Content-Disposition': 'file; filename="newFile.png"'
+                'Content-Disposition': `file; filename="${fileName}"`
             },
             body: data
         })

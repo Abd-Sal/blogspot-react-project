@@ -1,13 +1,43 @@
+import { useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import { GrLanguage } from "react-icons/gr";
 import { NavLink } from 'react-router-dom';
+import { IoLogOutOutline } from "react-icons/io5";
+import Dropdown from 'react-bootstrap/Dropdown';
+import { AuthContext } from '../Context/AuthContext';
 
 const NavActions = () => {
+  const {authInfo, isInitialized} = useContext(AuthContext);
+
   return (
     <div className="w-100 d-flex justify-content-lg-end align-items-center gap-2">
         <Button variant="outline-light"> <GrLanguage /> العربية</Button>
-        <NavLink to={'/sign-in'}><Button variant="outline-light">Sing In</Button></NavLink>
-        <NavLink to={'/register'}><Button variant="light">Create Account</Button></NavLink>
+        {
+          !isInitialized &&
+          <>
+            <NavLink to={'/sign-in'}><Button variant="outline-light">Sing In</Button></NavLink>
+            <NavLink to={'/register'}><Button variant={`${!isInitialized?'light':'outline-light'}`}>Create Account</Button></NavLink>
+          </>
+        }
+        {
+          isInitialized &&
+          <Dropdown>
+            <Dropdown.Toggle variant="" id="dropdown-basic">
+              <div className='d-flex justify-content-between align-items-center gap-1'>
+                <div className='profile'>
+                  <img src={'../../src/assets/profile.jpg'} alt="profile image" className='rounded-5'/>
+                </div>
+                <h5 className='mb-0 text-white'>{authInfo.current_user.name}</h5>
+              </div>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item as={NavLink} to="/me/profile">My Profule</Dropdown.Item>
+              <Dropdown.Item 
+                as={NavLink} to="/sign-out"
+              >Logout <IoLogOutOutline /></Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        }
     </div>
   )
 }

@@ -12,7 +12,7 @@ const Navbar = () => {
                     <Col lg={2} className="p-2 pt-1">
                         <Logo/>
                     </Col>
-                    <Col lg={6} className="d-flex align-items-center">
+                    <Col lg={5} className="d-flex align-items-center">
                         <div className="w-100 d-flex justify-content-start align-items-center">
                             <ul className="navlinks pt-3 w-100 d-flex justify-content-start align-items-center gap-4">
                                 <li>
@@ -33,7 +33,7 @@ const Navbar = () => {
                             </ul>
                         </div>
                     </Col>
-                    <Col lg={4} className="d-flex justify-conetnt-end align-items-center ">
+                    <Col lg={5} className="d-flex justify-conetnt-end align-items-center ">
                         <NavActions/>
                     </Col>
                 </Row>

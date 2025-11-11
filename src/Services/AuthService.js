@@ -35,7 +35,7 @@ export const AuthService = {
     },
     LOGOUT: function({token}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.AUTH.AUTH_LOGOUT(token)}`
-        fetch(`${url}`,{
+        fetch(url, {
             method:'POST',
             headers:{
                 'Content-Type': 'application/json'
@@ -46,6 +46,7 @@ export const AuthService = {
                 return response.json();
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
+
     },
     DELETE_USER: function({userID, csrfToken}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.AUTH.DELETE_USER(userID)}`

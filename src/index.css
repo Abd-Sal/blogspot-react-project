@@ -183,3 +183,26 @@ footer{
     color: var(--main-bg-color);
     cursor: pointer;
 }
+.profile{
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px 0px 2px 0px #4CBB17 solid;
+}
+#dropdown-basic:hover{
+    border-bottom: 2px #fff solid;
+    border-radius: 0px;
+}
+.dropdown-toggle::after{
+    display: inline !important;
+    margin-left: 0 !important;
+    vertical-align: 0 !important;
+    content: "" !important;
+    border-top: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+    border-left: 0 !important;
+}
