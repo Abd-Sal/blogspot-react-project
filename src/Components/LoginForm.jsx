@@ -121,6 +121,7 @@ const LoginForm = () => {
                                         type="checkbox"
                                         name="remember-me"
                                         id="remember-me"
+                                        disabled={isLoading}
                                     />
                                     <label className={'remember-me'} htmlFor="remember-me">Remember me</label>
                                 </div>
