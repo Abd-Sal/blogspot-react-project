@@ -7,6 +7,7 @@ import Alert from 'react-bootstrap/Alert';
 import { useNavigate } from "react-router-dom";
 import { UserService } from "../Services/UserService";
 import { EmptyObjectChecker } from "../HelpTools/EmptyObjectChecker";
+import { Base64Converter } from "../HelpTools/Base64Converter";
 
 const LoginForm = () => {
     const {authInfo, setAuthInfo, isInitialized, setIsInitialized} = useContext(AuthContext);
@@ -21,11 +22,7 @@ const LoginForm = () => {
         setIsLoading(true)
         AuthService.LOGIN({username: loginInfo.username, password: loginInfo.password})
         .then((data)=>{
-            console.log(data);
-            localStorage.setItem('auth', JSON.stringify(data))
             setAuthInfo(data)
-            setIsInitialized(true);
-            getUserProfile();
         })
         .catch((err)=>{
             setFailedMsg(err.message)
@@ -35,12 +32,13 @@ const LoginForm = () => {
         })
     }
 
-    const getUserProfile = ()=>{
-        UserService.CURRENT_PROFILE({username: loginInfo.username, password: loginInfo.password, userID: authInfo.current_user.uid})
+    const getUserProfile = ()=>{       
+        UserService.CURRENT_PROFILE({credintials: Base64Converter({username: loginInfo.username, password: loginInfo.password}), userID: authInfo.current_user.uid})
         .then((data)=>{
             setAuthInfo({
                 ...authInfo,
-                userInfo:data
+                userInfo:data,
+                "credintials": Base64Converter({username: loginInfo.username, password: loginInfo.password})
             })
             setUserInfo(true);
         })
@@ -52,12 +50,15 @@ const LoginForm = () => {
     }
 
     useEffect(()=>{
-        if(userInfo && Object.keys(authInfo).includes('userInfo') && !EmptyObjectChecker(authInfo.userInfo)){
-            console.log('here + ' + Object.keys(authInfo).includes('userInfo'));
-            localStorage.setItem('auth', authInfo)
-            navigate('/', { replace:true })
+        if(!EmptyObjectChecker(authInfo) && !userInfo){
+            getUserProfile();
         }
-    }, [userInfo])
+        else if(!EmptyObjectChecker(authInfo) && userInfo){
+            localStorage.setItem('auth', JSON.stringify(authInfo))
+            setIsInitialized(true);
+            navigate('/', { replace: true })
+        }
+    }, [authInfo])
 
     if(!isInitialized)
     return (
@@ -127,7 +128,7 @@ const LoginForm = () => {
                                 </div>
                                 <button
                                     type="submit"
-                                    disabled={!loginInfo.username || !loginInfo.password}
+                                    disabled={!loginInfo.username || !loginInfo.password || isLoading}
                                     className="btn btn-purple text-white pt-2 pb-2 ps-4 pe-4"
                                 >Sign In <FaArrowRight /></button>
                             </div>

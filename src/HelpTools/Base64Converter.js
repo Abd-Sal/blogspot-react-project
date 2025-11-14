@@ -1,3 +1,3 @@
-export const Base64Converter = ({value})=>{
-    return `Basic ${btoa(value)}`;
+export const Base64Converter = ({username, password})=>{
+    return `Basic ${btoa(`${username}:${password}`)}`;
 }

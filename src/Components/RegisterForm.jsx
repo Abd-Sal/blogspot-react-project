@@ -94,7 +94,7 @@ const RegisterForm = () => {
     return (
         <>
             {
-                isSession &&
+                isSuccess &&
                 <Modal show={isSuccess} onHide={isSuccess}>
                     <Modal.Header>
                         <Modal.Title>Registered Successfully</Modal.Title>

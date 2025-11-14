@@ -2,12 +2,12 @@ import { APIConfig } from "../API/APIConfig"
 import { Base64Converter } from "../HelpTools/Base64Converter"
 
 export const UserService = {
-    CURRENT_PROFILE: function({userID, username, password}){
+    CURRENT_PROFILE: function({userID, credintials}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.USER.CURRENT_PROFILE(userID)}`
         return fetch(`${url}`, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': Base64Converter(`${username}:${password}`)
+                'Authorization': credintials
             }
         })
         .then((response)=>{
@@ -16,12 +16,12 @@ export const UserService = {
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
     },
-    USERS_LIST: function({username, password}){
+    USERS_LIST: function({credintials}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.USER.USER_LIST}`
         return fetch(`${url}`,{
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': Base64Converter(`${username}:${password}`)
+                'Authorization': credintials
             }
         })
         .then((response)=>{
@@ -30,13 +30,13 @@ export const UserService = {
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
     },
-    EDIT_USER: function({userID, username, password, csrfToken, data}){
+    EDIT_USER: function({userID, credintials, csrfToken, data}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.USER.EDIT_USER(userID)}`
         return fetch(`${url}`,{
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': Base64Converter(`${username}:${password}`),
+                'Authorization': credintials,
                 'X-CSRF-Token': csrfToken
             },
             body: JSON.stringify(data)
@@ -47,13 +47,13 @@ export const UserService = {
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
     },
-    USER_PICTURE: function({username, password, csrfToken, data, fileName}){
+    USER_PICTURE: function({credintials, csrfToken, data, fileName}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.USER.USER_PICTURE}`
         return fetch(`${url}`,{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/octet-stream',
-                'Authorization': Base64Converter(`${username}:${password}`),
+                'Authorization': credintials,
                 'X-CSRF-Token': csrfToken,
                 'Content-Disposition': `file; filename="${fileName}"`
             },

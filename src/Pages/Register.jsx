@@ -1,8 +1,22 @@
 import { Col, Container, Row } from "react-bootstrap"
 import AuthNavbar from "../Components/AuthNavbar"
 import RegisterForm from "../Components/RegisterForm"
+import { useContext, useEffect } from "react"
+import { AuthContext } from "../Context/AuthContext"
+import { useNavigate } from "react-router-dom"
+import { EmptyObjectChecker } from "../HelpTools/EmptyObjectChecker"
 
 const Register = () => {
+  const {isInitialized, authInfo} = useContext(AuthContext)
+  
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    if(isInitialized && !EmptyObjectChecker(authInfo))
+      navigate('/', {replace:true})
+  }, [authInfo])
+
+  if(!isInitialized)
   return (
     <>
       <div className={"wrapper"}>
@@ -25,6 +39,11 @@ const Register = () => {
         <footer>
         </footer>
       </div>
+    </>
+  )
+
+  return (
+    <>
     </>
   )
 }

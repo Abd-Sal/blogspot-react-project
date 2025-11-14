@@ -5,6 +5,9 @@ import { NavLink } from 'react-router-dom';
 import { IoLogOutOutline } from "react-icons/io5";
 import Dropdown from 'react-bootstrap/Dropdown';
 import { AuthContext } from '../Context/AuthContext';
+import { CgProfile } from "react-icons/cg";
+import { TfiLayoutListPost } from "react-icons/tfi";
+import { IoCreateSharp } from "react-icons/io5";
 
 const NavActions = () => {
   const {authInfo, isInitialized} = useContext(AuthContext);
@@ -25,16 +28,18 @@ const NavActions = () => {
             <Dropdown.Toggle variant="" id="dropdown-basic">
               <div className='d-flex justify-content-between align-items-center gap-1'>
                 <div className='profile'>
-                  <img src={'../../src/assets/profile.jpg'} alt="profile image" className='rounded-5'/>
+                  <img src={ authInfo.userInfo.user_picture.length ? authInfo.userInfo.user_picture[0].url :  '../../src/assets/profile.png' } alt="profile image" className='rounded-5'/>
                 </div>
                 <h5 className='mb-0 text-white'>{authInfo.current_user.name}</h5>
               </div>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item as={NavLink} to="/me/profile">My Profule</Dropdown.Item>
+              <Dropdown.Item as={NavLink} to="/me/profile"><CgProfile /> My Profile</Dropdown.Item>
+              <Dropdown.Item as={NavLink} to="/me/articles"><TfiLayoutListPost /> My Articles</Dropdown.Item>
+              <Dropdown.Item as={NavLink} to="/article/write-article"><IoCreateSharp /> Create Article</Dropdown.Item>
               <Dropdown.Item 
                 as={NavLink} to="/sign-out"
-              >Logout <IoLogOutOutline /></Dropdown.Item>
+              ><IoLogOutOutline /> Logout</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         }

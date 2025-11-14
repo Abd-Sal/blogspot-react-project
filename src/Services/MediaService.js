@@ -2,13 +2,13 @@ import { APIConfig } from "../API/APIConfig";
 import { Base64Converter } from "../HelpTools/Base64Converter"
 
 export const MediaService = {
-    UPLOAD_SINGLE_IMAGE: function({username, password, csrfToken, formData, fileName}){
+    UPLOAD_SINGLE_IMAGE: function({credintials, csrfToken, formData, fileName}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.IMAGE_UPLOAD}`
         return fetch(`${url}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/octet-stream',
-                'Authorization': Base64Converter(`${username}:${password}`),
+                'Authorization': credintials,
                 'X-CSRF-Token': `${csrfToken}`,
                 'Content-Disposition': `file; filename="${fileName}"`
             },
@@ -20,13 +20,13 @@ export const MediaService = {
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
     },
-    UPLOAD_MULTIPLE_IMAGES: function({username, password, csrfToken, formData, filesNames}){
+    UPLOAD_MULTIPLE_IMAGES: function({credintials, csrfToken, formData, filesNames}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.IMAGES_UPLOAD}`
         return fetch(`${url}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/octet-stream',
-                'Authorization': Base64Converter(`${username}:${password}`),
+                'Authorization': credintials,
                 'X-CSRF-Token': `${csrfToken}`,
                 'Content-Disposition': `file; filename="${filesNames}"`
             },

@@ -11,7 +11,7 @@ export const CSRFService = {
         })
         .then((response)=>{
             if(response.ok)
-                return response.json();
+                return response;
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
     },

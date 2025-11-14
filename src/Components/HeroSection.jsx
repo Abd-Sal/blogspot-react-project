@@ -65,7 +65,7 @@ const HeroSection = ({items}) => {
                                     <hr />
                                     <p className="hero-p">{item.brief_description}</p>
                                     <div className="d-flex justify-content-start align-items-center gap-4">
-                                        <NavLink to={`articles/${items.id}`} className="btn btn-purple text-white pt-2 pb-2 ps-5 pe-5">Start Reading</NavLink>
+                                        <NavLink to={`articles/${item.id}`} className="btn btn-purple text-white pt-2 pb-2 ps-5 pe-5">Start Reading</NavLink>
                                         {
                                             isInitialized ?
                                                 ''
