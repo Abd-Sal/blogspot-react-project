@@ -355,7 +355,10 @@ const ProfileSettings = () => {
                                 (
                                     (Object.keys(isChanged).filter(key => isChanged[key]).length === 0) &&
                                     (imageSrc === null) &&
-                                    (imageRef.current && !imageRef.current.src.includes('src/assets/profile.png') && authInfo.userInfo.user_picture.length > 0)
+                                    ( (authInfo.userInfo.user_picture.length > 0) ?
+                                        imageRef.current && !imageRef.current.src.includes('src/assets/profile.png') :
+                                        true
+                                    )
                                 )
                                 ||
                                 isLoading
