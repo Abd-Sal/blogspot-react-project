@@ -455,3 +455,20 @@ a .cate-desc{
 .writer-card:hover{
     transform: translate(2.1, 1.1);
 }
+.create-title-page{
+    font-size: 75px;
+    font-weight: 700;
+    color: rgb(12, 36, 102);
+}
+.primary-image-field{
+    height: 600px;
+}
+.cursor-pointer{
+    cursor:  pointer !important;
+}
+.gallery-images{
+    height: 250px;
+}
+.add-image{
+    height: 200px;
+}

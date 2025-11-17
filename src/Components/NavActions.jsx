@@ -36,7 +36,7 @@ const NavActions = () => {
             <Dropdown.Menu>
               <Dropdown.Item as={NavLink} to="/me/profile"><CgProfile /> My Profile</Dropdown.Item>
               <Dropdown.Item as={NavLink} to="/me/articles"><TfiLayoutListPost /> My Articles</Dropdown.Item>
-              <Dropdown.Item as={NavLink} to="/article/write-article"><IoCreateSharp /> Create Article</Dropdown.Item>
+              <Dropdown.Item as={NavLink} to="/articles/write-article"><IoCreateSharp /> Create Article</Dropdown.Item>
               <Dropdown.Item 
                 as={NavLink} to="/sign-out"
               ><IoLogOutOutline /> Logout</Dropdown.Item>

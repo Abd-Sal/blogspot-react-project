@@ -79,13 +79,12 @@ const LatestArticles = ({items=4}) => {
                     {
                         Array.isArray(latestArticles) &&
                         latestArticles.length > 0 &&
-                        latestArticles.map((item, index)=>(
-                            index < items ?
-                            <Col lg={3}>
+                        latestArticles.map((item, index) => (
+                            index < items ? (
+                            <Col lg={3} key={item.id ?? index}>
                                 <div className="w-100 h-100">
                                     <NavLink to={`/articles/${item.id}`} className={'text-decoration-none'}>
                                         <ArticleCard 
-                                            key={item.id}
                                             id={item.id}
                                             title={item.title}
                                             author={item.author}
@@ -96,7 +95,7 @@ const LatestArticles = ({items=4}) => {
                                     </NavLink>
                                 </div>
                             </Col>
-                            :''
+                            ) : null
                         ))
                     }
                 </Row>
