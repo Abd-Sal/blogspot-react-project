@@ -19,8 +19,12 @@ export const BlogService = {
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
     },
-    BLOG_LIST: function({credintials}){
+    BLOG_LIST: function({credintials, options}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.BLOG.BLOG_LIST}`
+        const params = new URLSearchParams(); 
+        options.page >= 0 && params.append('page', options.page)
+        options.pageSize && params.append('items_per_page', options.pageSize)
+        url = `${url}?${params.toString()}`
         return fetch(`${url}`, {
             headers: {
                 'Content-Type': 'application/json',

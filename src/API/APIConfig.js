@@ -1,5 +1,6 @@
 export const APIConfig = {
     BASE_URL: 'https://tamkeen-dev.com/api',
+    BASE_DOMAIN: 'https://tamkeen-dev.com',
     ENDPOINTS:{
         AUTH:{
             AUTH_LOGIN: '/user/login?_format=json',
