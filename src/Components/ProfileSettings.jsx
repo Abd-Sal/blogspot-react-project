@@ -43,12 +43,17 @@ const ProfileSettings = () => {
         setImageBinary(file);
         if (!file) return;
 
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file only!');
+            e.target.value = ''; 
+            return;
+        }
+        
         const reader = new FileReader();
         reader.onload = () => {
         setImageSrc(reader.result);
         };
         reader.readAsDataURL(file);
-        e.t
         setFileName(file.name)
     };
 

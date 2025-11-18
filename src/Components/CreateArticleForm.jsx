@@ -4,23 +4,26 @@ import Alert from 'react-bootstrap/Alert';
 import { AuthContext } from "../Context/AuthContext";
 import { RiImageAddFill } from "react-icons/ri";
 import { IoMdClose } from "react-icons/io";
-
 import { CategoryService } from "../Services/CategoryService"
+import { EmptyObjectChecker } from "../HelpTools/EmptyObjectChecker";
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { useNavigate } from "react-router-dom";
 
 const CreateArticleForm = () => {
     //STATES
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    const navigate = useNavigate()
     const {authInfo, isInitialized, setAuthInfo} = useContext(AuthContext)
-    
     const [isLoadingCategories, setIsLoadingCategories] = useState(false)
     const [failedMsgCategories, setFailedMsgCategories] = useState('')
     const [categories, setCategories] = useState([])
-
     const [isLoadingTags, setIsLoadingTags] = useState(false)
     const [failedMsgTags, setFailedMsgTags] = useState('')
     const [tags, setTags] = useState([])
-
     const [selectedTags, setSelectedTags] = useState([])
-
     const [requestBody, setRequestBody] = useState(
         {
             "type": [{
@@ -40,10 +43,10 @@ const CreateArticleForm = () => {
         }
     )
     const [tagSelectorValue, setTagSelectorValue] = useState('')
-
+    const [primaryImage, setPrimaryImage] = useState({})
+    const [galleryImages, setGalleryImages] = useState([])
     const primaryImageBtnRef = useRef()
     const imageGalleryAddRef = useRef()
-    // const tagSelectorRef = useRef()
 
     //FUNCTIONs
     const getCategories = ()=>{
@@ -74,7 +77,6 @@ const CreateArticleForm = () => {
             setIsLoadingTags(false);
         })
     }
-
     const handleTitleChange = (e)=>{
         setRequestBody({
             ...requestBody,
@@ -92,22 +94,86 @@ const CreateArticleForm = () => {
             }]
         })
     }
-    const handleTagChange = (e)=>{        
+    const handleTagChange = (e)=>{
         if(!e.target.value) return;
         let jsonValue = JSON.parse(e.target.value)
         let checkExist = selectedTags.filter(item => item.target_id === jsonValue.target_id)
         if(checkExist.length === 0){
-            let temp = selectedTags
-            temp.push(jsonValue)
-            setSelectedTags(temp)
+            setSelectedTags([...selectedTags, jsonValue])
             setTagSelectorValue('')
         }
     }
-    const handleDeleteSelectedTag = ({id, name})=>{        
+    const handleDeleteSelectedTag = ({id, name})=>{
         setSelectedTags(selectedTags.filter(item => item.target_id !== id))
-    } 
-    const handlePrimaryImageChange = ()=>{}
-    const handleAddImageGallery = ()=>{}
+    }
+    const handlePrimaryImageChange = (e)=>{
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file only!');
+            e.target.value = ''; 
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            setPrimaryImage({
+                fileName: file.name,
+                binary: file,
+                src: reader.result 
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+    const handleAddImageGallery = async (e) => {
+        const files = e.target.files;
+        if (!files?.length) return;
+
+        const fileArray = Array.from(files);
+        const invalidFiles = fileArray.filter(file => !file.type.startsWith('image/'));
+        
+        if (invalidFiles.length > 0) {
+            alert('Please select only image files!');
+            e.target.value = '';
+            return;
+        }
+
+        const imagePromises = fileArray.map(file => 
+            new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve({
+                    id: `gallery-${Date.now()}-${Math.random()}`,
+                    fileName: file.name,
+                    binary: file,
+                    src: reader.result
+                });
+                reader.readAsDataURL(file);
+            })
+        );
+
+        try {
+            const newImages = await Promise.all(imagePromises);
+            setGalleryImages(prev => [...prev, ...newImages]);
+        } catch (error) {
+            console.error('Error processing images:', error);
+        }
+
+        e.target.value = '';
+    };
+    const handleDeleteGalleryImage = (e) => {
+        e.stopPropagation();g
+        e.preventDefault();
+        setGalleryImages(prev => prev.filter(item => item.id !== e.target.id));
+    };
+
+    const isReadyToPublish = ()=>
+        requestBody.title[0].value &&
+        requestBody.body[0].value &&
+        requestBody.field_category.length > 0 &&
+        requestBody.field_category[0].target_id &&
+        requestBody.type[0].target_id &&
+        !EmptyObjectChecker(primaryImage)
 
 
     //EFFECTS
@@ -176,9 +242,20 @@ const CreateArticleForm = () => {
                                         name="category"
                                         id="category"
                                         className="form-select"
-                                        defaultChecked={`${categories[0].id}`}
-                                        onChange={(e)=>{}}
+                                        defaultChecked={``}
+                                        onChange={(e)=>{
+                                            setRequestBody({
+                                                ...requestBody,
+                                                field_category: [
+                                                    {"target_id": e.target.value}
+                                                ]
+                                            })
+                                        }}
                                     >
+                                        <option 
+                                            key={`empty-category`}
+                                            value=""
+                                        >...</option>
                                         {
                                             categories.map((item)=>(
                                                 <option 
@@ -195,10 +272,15 @@ const CreateArticleForm = () => {
                             {/* <label htmlFor="">Primary Image</label> */}
                             <div className="primary-image-field hight-lite w-100 rounded-3 p-3 d-flex flex-column justify-content-center align-items-center">
                                 <div
-                                    className="cursor-pointer h-100 rounded-2 w-100 d-flex justify-content-center align-items-center bg-gray"
+                                    className="cursor-pointer h-100 rounded-2 w-100 d-flex justify-content-center align-items-center"
                                     onClick={()=>{primaryImageBtnRef.current.click()}}
                                 >
+                                {
+                                    EmptyObjectChecker(primaryImage) ?
                                     <RiImageAddFill fontSize={75} color="text-white"/>
+                                    :
+                                    <img src={primaryImage.src} alt="primary image" />
+                                }
                                 </div>
                                 <div className="d-flex flex-column justify-content-start align-items-start gap-1 w-100 pt-4">
                                     <p className="mb-0">Please upload image 1000 X 600, this image will set as primary image for your article.</p>
@@ -242,7 +324,23 @@ const CreateArticleForm = () => {
                             </div>
                             
                             {/* Gallery Field */}
-                            <div className="w-100">
+                            <div className="w-100 d-flex flex-wrap justify-content-start align-items-center">
+                                {
+                                    galleryImages.length > 0 &&
+                                    galleryImages.map((item, index)=>(
+                                        <div
+                                            key={`gallery-image-${index}`}
+                                            className="border border-gray rounded-3 gallery-images w-25 d-flex justify-content-center align-items-center position-relative p-1"
+                                        >
+                                            <img src={item.src} alt="Gallery Image" className="h-100 rounded-2" />
+                                            <button
+                                                id={item.id}
+                                                className="btn position-absolute end-0 top-0 p-2"
+                                                onClick={handleDeleteGalleryImage}
+                                            ><IoMdClose fontSize={20} style={{backgroundColor:'#c44551', color: 'white', borderRadius: '50%'}}/></button>
+                                        </div>
+                                    ))
+                                }
                                 <div
                                     className="cursor-pointer rounded-3 gallery-images bg-gray w-25 d-flex justify-content-center align-items-center"
                                     onClick={()=>{imageGalleryAddRef.current.click()}}
@@ -256,6 +354,7 @@ const CreateArticleForm = () => {
                                     ref={imageGalleryAddRef}
                                     accept=".png, .jpg, .jpeg"
                                     onChange={handleAddImageGallery}
+                                    multiple
                                     ></input>
                             </div>
 
@@ -273,7 +372,7 @@ const CreateArticleForm = () => {
                                                         key={index}
                                                         className="ps-3 pe-3 bg-primary text-white rounded-5 d-flex justify-content-center align-items-center"
                                                     >
-                                                        <span className="m-0">{item.name}</span>
+                                                        <span className="m-0">#{item.name.split(" ").join("_")}</span>
                                                         <button 
                                                             className="btn border-0"
                                                             onClick={()=>{handleDeleteSelectedTag({id: item.target_id, name: item.name})}}
@@ -328,10 +427,32 @@ const CreateArticleForm = () => {
                             <hr className="w-100"/>
                             {/* Submit */}
                             <div className="w-100 d-flex justify-content-end align-items-center gap-5">
+                                <Modal show={show} onHide={handleClose}>
+                                    <Modal.Header>
+                                    <Modal.Title>Discard Changes</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>are you sure?</Modal.Body>
+                                    <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        Stay
+                                    </Button>
+                                    <Button variant="danger" onClick={()=>{
+                                        navigate('/articles', {replace: true})
+                                    }}>
+                                        Leave Page
+                                    </Button>
+                                    </Modal.Footer>
+                                </Modal>
                                 <button
                                     className="btn btn-danger ps-5 pe-5"
+                                    onClick={handleShow}
                                 >Cancel</button>
                                 <button
+                                    disabled={
+                                        isLoadingCategories ||
+                                        isLoadingTags ||
+                                        !isReadyToPublish()
+                                    }
                                     className="btn btn-success ps-5 pe-5"
                                 >Publish</button>
                             </div>
