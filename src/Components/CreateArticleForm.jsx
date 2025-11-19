@@ -55,7 +55,7 @@ const CreateArticleForm = () => {
     const [galleryImages, setGalleryImages] = useState([])
     const [isUploadImagesSuccess, setIsUploadImagesSuccess] = useState({
         'primary': false,
-        'gallery': false
+        'gallery': 0
     })
     const primaryImageBtnRef = useRef()
     const imageGalleryAddRef = useRef()
@@ -116,25 +116,25 @@ const CreateArticleForm = () => {
         let checkExist = selectedTags.filter(item => item.target_id === jsonValue.target_id)
         if(checkExist.length === 0){
             setSelectedTags([...selectedTags, jsonValue])
+            setRequestBody({
+                ...requestBody,
+                "field_tags":[
+                    ...requestBody.field_tags,
+                    {"target_id": jsonValue.target_id}
+                ]
+            })
             setTagSelectorValue('')
         }
     }
 
-    useEffect(()=>{
-        let _tags = []
-        selectedTags.map((item, index)=>{
-            _tags.push({
-                "target_id": item.id
-            })
-        })
-        setRequestBody({
-            ...requestBody,
-            "field_tags": tags
-        })
-    }, [selectedTags])
-
     const handleDeleteSelectedTag = ({id, name})=>{
         setSelectedTags(selectedTags.filter(item => item.target_id !== id))
+        setRequestBody({
+            ...requestBody,
+            "field_tags":[
+                [...requestBody.field_tags].filter(item => item.target_id !== id)
+            ]
+        })
     }
 
     const handlePrimaryImageChange = (e)=>{
@@ -235,8 +235,6 @@ const CreateArticleForm = () => {
             data: primaryImage.binary
         })
         .then((data)=>{
-            console.log('single images');
-            console.log(data);
             setRequestBody({
                 ...requestBody,
                 "field_image":[
@@ -256,41 +254,73 @@ const CreateArticleForm = () => {
         })
     }
 
-    const uploadGalleryImages = ()=>{
-        galleryImages.length === 0 ?
-        setIsUploadImagesSuccess({
-            ...isUploadImagesSuccess,
-            'gallery': true
-        })
-        :
-        MediaService.UPLOAD_MULTIPLE_IMAGES({
-            credintials: authInfo.credintials,
-            csrfToken: CSRFToken,
-            filesNames: galleryImages.map((item)=> item.fileName),
-            formData: galleryImages.map((item)=> item.binary)
-        })
-        .then((data)=>{
-            console.log('mullti images');
-            console.log(data);
-            let field_gallery = [];
-            [...data.fid].map((item)=>{field_gallery.push({'target_id': item.value})})
+    // const uploadGalleryImages = ()=>{
+    //     galleryImages.map((item, index)=>{
+    //         MediaService.UPLOAD_MULTIPLE_IMAGES({
+    //             credintials: authInfo.credintials,
+    //             csrfToken: CSRFToken,
+    //             fileName: item.fileName,
+    //             formData: item.binary
+    //         })
+    //         .then((data)=>{
+    //             setRequestBody({
+    //                 ...requestBody,
+    //                 "field_gallery": [
+    //                     {"target_id": data.fid[0].value}
+    //                 ]
+    //             })
+    //             setIsUploadImagesSuccess({
+    //                 ...isUploadImagesSuccess,
+    //                 'gallery': isUploadImagesSuccess.gallery+1
+    //             })
+    //         })
+    //         .catch((err)=>{
+    //             setFailedMsg(err.message);
+    //             setIsLoading(false)
+    //         })
+    //         .finally(()=>{
+    //         })
+    //     })
+    // }
+
+    const uploadGalleryImages = async () => {
+        try {
+            // Create an array of promises for all image uploads
+            const uploadPromises = galleryImages.map((item, index) => 
+                MediaService.UPLOAD_MULTIPLE_IMAGES({
+                    credintials: authInfo.credintials,
+                    csrfToken: CSRFToken,
+                    fileName: item.fileName,
+                    formData: item.binary
+                })
+            );
+
+            // Wait for all uploads to complete
+            const results = await Promise.all(uploadPromises);
+            
+            // Extract all file IDs from the results
+            const galleryFileIds = results.map(data => ({
+                "target_id": data.fid[0].value
+            }));
+
+            // Update the state with all file IDs
             setRequestBody({
                 ...requestBody,
-                "field_gallery": field_gallery
-            })
+                "field_gallery": galleryFileIds
+            });
+
+            // Update success count
             setIsUploadImagesSuccess({
                 ...isUploadImagesSuccess,
-                'gallery': true
-            })
-        })
-        .catch((err)=>{
-            setFailedMsg(err.message);
-            setIsLoading(false)
-        })
-        .finally(()=>{
-        })
-    }
+                'gallery': isUploadImagesSuccess.gallery + galleryImages.length
+            });
 
+        } catch (err) {
+            setFailedMsg(err.message);
+            setIsLoading(false);
+        }
+    };
+    
     const sendData = ()=>{
         BlogService.CREATE_BLOG({
             credintials: authInfo.credintials,
@@ -298,7 +328,6 @@ const CreateArticleForm = () => {
             data: requestBody
         })
         .then((data)=>{
-            console.log(data);
             navigate('/me/articles', { replace: true })
         })
         .catch((err)=>{
@@ -328,11 +357,10 @@ const CreateArticleForm = () => {
     useEffect(()=>{
         if(CSRFToken){
             isUploadImagesSuccess.primary &&
-            isUploadImagesSuccess.gallery &&
+            isUploadImagesSuccess.gallery === galleryImages.length &&
             sendData();
             !isUploadImagesSuccess.primary && uploadPrimaryImage()
-            !isUploadImagesSuccess.gallery && uploadGalleryImages()
-            console.log("#2");
+            !isUploadImagesSuccess.gallery !== galleryImages.length && uploadGalleryImages()
         }
     }, [isUploadImagesSuccess])
     
