@@ -9,6 +9,11 @@ import { EmptyObjectChecker } from "../HelpTools/EmptyObjectChecker";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useNavigate } from "react-router-dom";
+import { BlogService } from "../Services/BlogService"
+import { MediaService } from "../Services/MediaService"
+import { CSRFService } from "../Services/CSRFService"
+import { Fancybox } from "@fancyapps/ui";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
 const CreateArticleForm = () => {
     //STATES
@@ -24,6 +29,8 @@ const CreateArticleForm = () => {
     const [failedMsgTags, setFailedMsgTags] = useState('')
     const [tags, setTags] = useState([])
     const [selectedTags, setSelectedTags] = useState([])
+    const [isLoading, setIsLoading] = useState(false) 
+    const [failedMsg, setFailedMsg] = useState('') 
     const [requestBody, setRequestBody] = useState(
         {
             "type": [{
@@ -42,9 +49,14 @@ const CreateArticleForm = () => {
             "field_category": []
         }
     )
+    const [CSRFToken, setCSRFToken] = useState('')
     const [tagSelectorValue, setTagSelectorValue] = useState('')
     const [primaryImage, setPrimaryImage] = useState({})
     const [galleryImages, setGalleryImages] = useState([])
+    const [isUploadImagesSuccess, setIsUploadImagesSuccess] = useState({
+        'primary': false,
+        'gallery': false
+    })
     const primaryImageBtnRef = useRef()
     const imageGalleryAddRef = useRef()
 
@@ -63,6 +75,7 @@ const CreateArticleForm = () => {
             setIsLoadingCategories(false);
         })
     }
+
     const getTags = ()=>{
         setIsLoadingTags(true);
         setFailedMsgTags('')
@@ -77,6 +90,7 @@ const CreateArticleForm = () => {
             setIsLoadingTags(false);
         })
     }
+    
     const handleTitleChange = (e)=>{
         setRequestBody({
             ...requestBody,
@@ -85,6 +99,7 @@ const CreateArticleForm = () => {
             }]
         })
     }
+
     const handleBodyChange = (e)=>{
         setRequestBody({
             ...requestBody,
@@ -94,6 +109,7 @@ const CreateArticleForm = () => {
             }]
         })
     }
+    
     const handleTagChange = (e)=>{
         if(!e.target.value) return;
         let jsonValue = JSON.parse(e.target.value)
@@ -103,9 +119,24 @@ const CreateArticleForm = () => {
             setTagSelectorValue('')
         }
     }
+
+    useEffect(()=>{
+        let _tags = []
+        selectedTags.map((item, index)=>{
+            _tags.push({
+                "target_id": item.id
+            })
+        })
+        setRequestBody({
+            ...requestBody,
+            "field_tags": tags
+        })
+    }, [selectedTags])
+
     const handleDeleteSelectedTag = ({id, name})=>{
         setSelectedTags(selectedTags.filter(item => item.target_id !== id))
     }
+
     const handlePrimaryImageChange = (e)=>{
         const file = e.target.files[0];
         if (!file) return;
@@ -126,6 +157,7 @@ const CreateArticleForm = () => {
         };
         reader.readAsDataURL(file);
     }
+
     const handleAddImageGallery = async (e) => {
         const files = e.target.files;
         if (!files?.length) return;
@@ -160,12 +192,13 @@ const CreateArticleForm = () => {
         }
 
         e.target.value = '';
-    };
+    }
+
     const handleDeleteGalleryImage = (e) => {
-        e.stopPropagation();g
+        e.stopPropagation();
         e.preventDefault();
         setGalleryImages(prev => prev.filter(item => item.id !== e.target.id));
-    };
+    }
 
     const isReadyToPublish = ()=>
         requestBody.title[0].value &&
@@ -173,8 +206,108 @@ const CreateArticleForm = () => {
         requestBody.field_category.length > 0 &&
         requestBody.field_category[0].target_id &&
         requestBody.type[0].target_id &&
-        !EmptyObjectChecker(primaryImage)
+        !EmptyObjectChecker(primaryImage);
 
+    const getCSRFToken = ()=>{
+        if(CSRFToken.length)return;
+        setIsLoading(true)
+        setFailedMsg('')
+        CSRFService.GET_CSRF_TOKEN()
+        .then((data)=>{
+             setCSRFToken(data)
+             setAuthInfo({
+                ...authInfo,
+                "csrf_token": data
+             })
+        })
+        .catch(err=>{
+            setFailedMsg(err.message)
+            setIsLoading(false);
+        })
+        .finally(()=>{})
+    }
+
+    const uploadPrimaryImage = ()=>{
+        MediaService.UPLOAD_SINGLE_IMAGE({
+            credintials: authInfo.credintials,
+            csrfToken: CSRFToken,
+            fileName: `${primaryImage.fileName}`,
+            data: primaryImage.binary
+        })
+        .then((data)=>{
+            console.log('single images');
+            console.log(data);
+            setRequestBody({
+                ...requestBody,
+                "field_image":[
+                    {"target_id": data.fid[0].value}
+                ]
+            })
+            setIsUploadImagesSuccess({
+                ...isUploadImagesSuccess,
+                'primary': true
+            })
+        })
+        .catch((err)=>{
+            setFailedMsg(err.message);
+            setIsLoading(false)
+        })
+        .finally(()=>{
+        })
+    }
+
+    const uploadGalleryImages = ()=>{
+        galleryImages.length === 0 ?
+        setIsUploadImagesSuccess({
+            ...isUploadImagesSuccess,
+            'gallery': true
+        })
+        :
+        MediaService.UPLOAD_MULTIPLE_IMAGES({
+            credintials: authInfo.credintials,
+            csrfToken: CSRFToken,
+            filesNames: galleryImages.map((item)=> item.fileName),
+            formData: galleryImages.map((item)=> item.binary)
+        })
+        .then((data)=>{
+            console.log('mullti images');
+            console.log(data);
+            let field_gallery = [];
+            [...data.fid].map((item)=>{field_gallery.push({'target_id': item.value})})
+            setRequestBody({
+                ...requestBody,
+                "field_gallery": field_gallery
+            })
+            setIsUploadImagesSuccess({
+                ...isUploadImagesSuccess,
+                'gallery': true
+            })
+        })
+        .catch((err)=>{
+            setFailedMsg(err.message);
+            setIsLoading(false)
+        })
+        .finally(()=>{
+        })
+    }
+
+    const sendData = ()=>{
+        BlogService.CREATE_BLOG({
+            credintials: authInfo.credintials,
+            csrfToken: CSRFToken,
+            data: requestBody
+        })
+        .then((data)=>{
+            console.log(data);
+            navigate('/me/articles', { replace: true })
+        })
+        .catch((err)=>{
+            setFailedMsg(err.message)
+        })
+        .finally(()=>{
+            setIsLoading(false)
+        })
+    }
 
     //EFFECTS
     const initializeCategories = useMemo(()=>{
@@ -187,7 +320,30 @@ const CreateArticleForm = () => {
             getTags();
     }, [tags])
 
+    useEffect(()=>{
+        if(CSRFToken && !EmptyObjectChecker(primaryImage))
+            uploadPrimaryImage()
+    }, [CSRFToken])
 
+    useEffect(()=>{
+        if(CSRFToken){
+            isUploadImagesSuccess.primary &&
+            isUploadImagesSuccess.gallery &&
+            sendData();
+            !isUploadImagesSuccess.primary && uploadPrimaryImage()
+            !isUploadImagesSuccess.gallery && uploadGalleryImages()
+            console.log("#2");
+        }
+    }, [isUploadImagesSuccess])
+    
+    useEffect(() => {
+        Fancybox.bind("[data-fancybox]", {
+        });
+        return () => {
+            Fancybox.destroy();
+        };
+    }, []);
+    
     if(isInitialized)
     return (
         <>
@@ -260,7 +416,7 @@ const CreateArticleForm = () => {
                                             categories.map((item)=>(
                                                 <option 
                                                     key={`category-${item.id}`}
-                                                    value={`category-${item.id}`}
+                                                    value={`${item.id}`}
                                                 >{item.name}</option>
                                             ))
                                         }
@@ -273,13 +429,20 @@ const CreateArticleForm = () => {
                             <div className="primary-image-field hight-lite w-100 rounded-3 p-3 d-flex flex-column justify-content-center align-items-center">
                                 <div
                                     className="cursor-pointer h-100 rounded-2 w-100 d-flex justify-content-center align-items-center"
-                                    onClick={()=>{primaryImageBtnRef.current.click()}}
+                                    onClick={()=>{
+                                        if(EmptyObjectChecker(primaryImage))
+                                        primaryImageBtnRef.current.click()
+                                    }}
                                 >
                                 {
                                     EmptyObjectChecker(primaryImage) ?
                                     <RiImageAddFill fontSize={75} color="text-white"/>
                                     :
-                                    <img src={primaryImage.src} alt="primary image" />
+                                    <img 
+                                        src={primaryImage.src}
+                                        alt="primary image"
+                                        data-fancybox="primary"    
+                                    />
                                 }
                                 </div>
                                 <div className="d-flex flex-column justify-content-start align-items-start gap-1 w-100 pt-4">
@@ -330,9 +493,14 @@ const CreateArticleForm = () => {
                                     galleryImages.map((item, index)=>(
                                         <div
                                             key={`gallery-image-${index}`}
-                                            className="border border-gray rounded-3 gallery-images w-25 d-flex justify-content-center align-items-center position-relative p-1"
+                                            className="cursor-pointer border border-gray rounded-3 gallery-images w-25 d-flex justify-content-center align-items-center position-relative p-1"
                                         >
-                                            <img src={item.src} alt="Gallery Image" className="h-100 rounded-2" />
+                                            <img 
+                                                src={item.src}
+                                                alt="Gallery Image"
+                                                className="h-100 rounded-2"
+                                                data-fancybox="gallery"    
+                                            />
                                             <button
                                                 id={item.id}
                                                 className="btn position-absolute end-0 top-0 p-2"
@@ -426,6 +594,18 @@ const CreateArticleForm = () => {
 
                             <hr className="w-100"/>
                             {/* Submit */}
+                            <div className="d-flex justify-content-center align-items-center w-100">
+                                {
+                                    failedMsg &&
+                                    <Alert key={'danger'} variant={'danger'} className="">
+                                        {failedMsg}
+                                    </Alert>
+                                }
+                                {
+                                    isLoading &&
+                                    <Spinner animation="grow" className="bg-main-color"/>
+                                }
+                            </div>
                             <div className="w-100 d-flex justify-content-end align-items-center gap-5">
                                 <Modal show={show} onHide={handleClose}>
                                     <Modal.Header>
@@ -449,10 +629,12 @@ const CreateArticleForm = () => {
                                 >Cancel</button>
                                 <button
                                     disabled={
+                                        isLoading ||
                                         isLoadingCategories ||
                                         isLoadingTags ||
                                         !isReadyToPublish()
                                     }
+                                    onClick={getCSRFToken}
                                     className="btn btn-success ps-5 pe-5"
                                 >Publish</button>
                             </div>
