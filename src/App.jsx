@@ -13,6 +13,8 @@ import { AuthContext } from "./Context/AuthContext"
 import Logout from "./Pages/Logout"
 import { useContext } from "react"
 import CreateArticle from "./Pages/CreateArticle"
+import Article from "./Pages/Article"
+import FAQs from "./Pages/FAQs"
 
 function App() {
   const {isInitialized} = useContext(AuthContext)
@@ -22,9 +24,12 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home/>} />
           <Route path="/articles" element={isInitialized ? <Articles /> :  <Navigate to="/sign-in" replace />}/>
+          <Route path="/articles/:id" element={isInitialized ? <Article /> :  <Navigate to="/sign-in" replace />}/>
           <Route path="/articles/write-article" element={isInitialized ? <CreateArticle /> :  <Navigate to="/sign-in" replace />}/>
+          <Route path="/faqs" element={<FAQs />} />
           <Route path="/about-us" element={<AboutUs/>} />
           <Route path="/contact-us" element={<ContactUs/>} />
+          <Route path="/me/articles" element={isInitialized ? <Articles OnlyMyArticles={true}/> :  <Navigate to="/sign-in" replace />} />
           <Route path="/me/profile" element={isInitialized ? <Profile/> :  <Navigate to="/sign-in" replace />} />
           <Route path="/sign-out" element={isInitialized ? <Logout/> :  <Navigate to="/" replace />} />
           <Route path="*" element={<NotFound/>} />

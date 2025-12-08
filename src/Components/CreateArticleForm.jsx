@@ -197,7 +197,8 @@ const CreateArticleForm = () => {
     const handleDeleteGalleryImage = (e) => {
         e.stopPropagation();
         e.preventDefault();
-        setGalleryImages(prev => prev.filter(item => item.id !== e.target.id));
+        let id = e.currentTarget.id;
+        setGalleryImages(prev => prev.filter(item => item.id !== id));
     }
 
     const isReadyToPublish = ()=>
@@ -232,7 +233,7 @@ const CreateArticleForm = () => {
             credintials: authInfo.credintials,
             csrfToken: CSRFToken,
             fileName: `${primaryImage.fileName}`,
-            data: primaryImage.binary
+            formData: primaryImage.binary
         })
         .then((data)=>{
             setRequestBody({
@@ -253,35 +254,6 @@ const CreateArticleForm = () => {
         .finally(()=>{
         })
     }
-
-    // const uploadGalleryImages = ()=>{
-    //     galleryImages.map((item, index)=>{
-    //         MediaService.UPLOAD_MULTIPLE_IMAGES({
-    //             credintials: authInfo.credintials,
-    //             csrfToken: CSRFToken,
-    //             fileName: item.fileName,
-    //             formData: item.binary
-    //         })
-    //         .then((data)=>{
-    //             setRequestBody({
-    //                 ...requestBody,
-    //                 "field_gallery": [
-    //                     {"target_id": data.fid[0].value}
-    //                 ]
-    //             })
-    //             setIsUploadImagesSuccess({
-    //                 ...isUploadImagesSuccess,
-    //                 'gallery': isUploadImagesSuccess.gallery+1
-    //             })
-    //         })
-    //         .catch((err)=>{
-    //             setFailedMsg(err.message);
-    //             setIsLoading(false)
-    //         })
-    //         .finally(()=>{
-    //         })
-    //     })
-    // }
 
     const uploadGalleryImages = async () => {
         try {
@@ -417,6 +389,10 @@ const CreateArticleForm = () => {
                                     <div className="w-100 d-flex justify-content-center align-items-center pt-3 pb-3">
                                         <Alert key={'danger'} variant={'danger'} className="">
                                             {failedMsgCategories}
+                                            <button 
+                                                className="btn btn-danger"
+                                                onClick={getCategories}  
+                                            >Try Again</button>
                                         </Alert>
                                     </div>
                                 }
@@ -453,7 +429,6 @@ const CreateArticleForm = () => {
                             </div>
 
                             {/* primary image field */}
-                            {/* <label htmlFor="">Primary Image</label> */}
                             <div className="primary-image-field hight-lite w-100 rounded-3 p-3 d-flex flex-column justify-content-center align-items-center">
                                 <div
                                     className="cursor-pointer h-100 rounded-2 w-100 d-flex justify-content-center align-items-center"
@@ -580,7 +555,6 @@ const CreateArticleForm = () => {
                                     }
                                 </div>
 
-
                                 <label htmlFor="tags" className="mt-5">Select Tags</label>
                                 {
                                     isLoadingTags &&
@@ -593,6 +567,10 @@ const CreateArticleForm = () => {
                                     <div className="w-100 d-flex justify-content-center align-items-center pt-3 pb-3">
                                         <Alert key={'danger'} variant={'danger'} className="">
                                             {failedMsgTags}
+                                            <button 
+                                            className="btn btn-danger"
+                                            onClick={getTags}  
+                                            >Try Again</button>
                                         </Alert>
                                     </div>
                                 }

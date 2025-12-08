@@ -11,7 +11,7 @@ export const MediaService = {
                 'X-CSRF-Token': `${csrfToken}`,
                 'Content-Disposition': `file; filename="${fileName}"`
             },
-            body: new FormData().append('field_image', formData)
+            body: formData
         })
         .then((response)=>{
             if(response.ok)
@@ -29,7 +29,7 @@ export const MediaService = {
                 'X-CSRF-Token': `${csrfToken}`,
                 'Content-Disposition': `file; filename="${fileName}"`
             },
-            body: new FormData().append(`field_gallery`, formData)
+            body: formData
         })
         .then((response)=>{
             if(response.ok)

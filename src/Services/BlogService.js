@@ -1,5 +1,4 @@
 import { APIConfig } from "../API/APIConfig";
-import { Base64Converter } from "../HelpTools/Base64Converter"
 
 export const BlogService = {
     CREATE_BLOG: function({credintials, csrfToken, data}){
@@ -19,12 +18,19 @@ export const BlogService = {
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
     },
-    BLOG_LIST: function({credintials, options}){
+    BLOG_LIST: function({credintials, options={}}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.BLOG.BLOG_LIST}`
         const params = new URLSearchParams(); 
         options.page >= 0 && params.append('page', options.page)
         options.pageSize && params.append('items_per_page', options.pageSize)
+        options.search && params.append('search', options.search)
+        options.category && params.append('category', options.category)
+        options.tag && params.append('tag', options.tag)
+        options.sort_by && params.append('sort_by', options.sort_by)
+        options.sort_order && params.append('sort_order', options.sort_order)
+
         url = `${url}?${params.toString()}`
+        console.log(url);
         return fetch(`${url}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -37,8 +43,20 @@ export const BlogService = {
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
     },
-    CURRENT_USER_ARTICLES: function({credintials}){
+    CURRENT_USER_ARTICLES: function({credintials, options={}}){
         let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.BLOG.CURRENT_USER_ARTICLES}`
+        const params = new URLSearchParams(); 
+        options.page >= 0 && params.append('page', options.page)
+        options.pageSize && params.append('items_per_page', options.pageSize)
+        options.search && params.append('search', options.search)
+        options.category && params.append('category', options.category)
+        options.tag && params.append('tag', options.tag)
+        options.sort_by && params.append('sort_by', options.sort_by)
+        options.sort_order && params.append('sort_order', options.sort_order)
+
+        url = `${url}?${params.toString()}`
+        console.log(url);
+
         return fetch(`${url}`, {
             headers: {
                 'Content-Type': 'application/json',

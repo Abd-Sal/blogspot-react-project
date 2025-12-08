@@ -52,5 +52,22 @@ export const CategoryService = {
                 return response.json();
             return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
         })
+    },
+    FAQs:({options={}})=>{
+        const params = new URLSearchParams(); 
+        options.id >= 0 && params.append('category', options.id)
+        let url = `${APIConfig.BASE_URL}${APIConfig.ENDPOINTS.FAQ_LIST}`
+        url = `${url}?${params.toString()}`
+        console.log(url);        
+        return fetch(`${url}`, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((response)=>{
+            if(response.ok)
+                return response.json();
+            return response.json().then((serverErrorMsg)=>{throw new Error(serverErrorMsg.message)})
+        })
     }
 }

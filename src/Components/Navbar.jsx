@@ -22,7 +22,7 @@ const Navbar = () => {
                                     <NavLink className={`text-white ${((isActive) =>`${isActive ? 'active' : ''}`)}`} to={'/articles'}>Articles</NavLink>
                                 </li>
                                 <li>
-                                    <NavLink className={`text-white ${((isActive) =>`${isActive ? 'active' : ''}`)}`} to={'/vacancies'}>Vacancies</NavLink>
+                                    <NavLink className={`text-white ${((isActive) =>`${isActive ? 'active' : ''}`)}`} to={'/faqs'}>FAQs</NavLink>
                                 </li>
                                 <li>
                                     <NavLink className={`text-white ${((isActive) =>`${isActive ? 'active' : ''}`)}`} to={'/about-us'}>About Us</NavLink>

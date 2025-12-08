@@ -19,9 +19,9 @@ export const APIConfig = {
             BLOG_LIST: '/blogs-api',
             CURRENT_USER_ARTICLES: '/blogs-api-current-user',
             ARTICLE_BY_ID: (ARTICLE_ID)=>`/node/${ARTICLE_ID}?_format=json`,
-            ARTICLE_DETAILS: (ARTICLE_ID)=>ARTICLE_BY_ID(ARTICLE_ID),
-            UPDATE_ARTICLE: (ARTICLE_ID)=>ARTICLE_BY_ID(ARTICLE_ID),
-            DELETE_ARTICLE: (ARTICLE_ID)=>ARTICLE_BY_ID(ARTICLE_ID)
+            ARTICLE_DETAILS: (ARTICLE_ID)=>`/node/${ARTICLE_ID}?_format=json`,
+            UPDATE_ARTICLE: (ARTICLE_ID)=>`/node/${ARTICLE_ID}?_format=json`,
+            DELETE_ARTICLE: (ARTICLE_ID)=>`/node/${ARTICLE_ID}?_format=json`,
         },
         IMAGE_UPLOAD: '/file/upload/node/blog/field_image?_format=json',
         IMAGES_UPLOAD: '/file/upload/node/blog/field_gallery?_format=json',

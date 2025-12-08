@@ -126,10 +126,24 @@ const HeroSection = ({items}) => {
                                     <Row className="pt-5 pb-5">
                                         <Col lg={5} className="d-flex justify-content-start align-items-center">
                                             <div>
-                                                <h2>{item.title}</h2>
+                                                <h2>
+                                                    {
+                                                        item.title.length > 60 ?
+                                                            item.title.substring(0, 60) + '...'
+                                                        :
+                                                            item.title
+                                                    }
+                                                </h2>
                                                 <hr />
                                                 {/* {item.body} */}
-                                                <p className="hero-p">{item.body}</p>
+                                                <p className="hero-p">
+                                                    {
+                                                        item.body.length > 300 ?
+                                                            item.body.substring(0, 300) + '...'
+                                                        :
+                                                            item.body
+                                                    }
+                                                </p>
                                                 <div className="d-flex justify-content-start align-items-center gap-4">
                                                     <NavLink to={`articles/${item.id}`} className="btn btn-purple text-white pt-2 pb-2 ps-5 pe-5">Start Reading</NavLink>
                                                     {

@@ -1,5 +1,4 @@
 import { APIConfig } from "../API/APIConfig"
-import { Base64Converter } from "../HelpTools/Base64Converter"
 
 export const UserService = {
     CURRENT_PROFILE: function({userID, credintials}){
