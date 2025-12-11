@@ -15,6 +15,7 @@ import { useContext } from "react"
 import CreateArticle from "./Pages/CreateArticle"
 import Article from "./Pages/Article"
 import FAQs from "./Pages/FAQs"
+import Jobs from "./Pages/Jobs"
 
 function App() {
   const {isInitialized} = useContext(AuthContext)
@@ -32,6 +33,7 @@ function App() {
           <Route path="/me/articles" element={isInitialized ? <Articles OnlyMyArticles={true}/> :  <Navigate to="/sign-in" replace />} />
           <Route path="/me/profile" element={isInitialized ? <Profile/> :  <Navigate to="/sign-in" replace />} />
           <Route path="/sign-out" element={isInitialized ? <Logout/> :  <Navigate to="/" replace />} />
+          <Route path="/jobs" element={isInitialized ? <Jobs/> :  <Navigate to="/sign-in" replace />} />
           <Route path="*" element={<NotFound/>} />
         </Route>
         <Route path="/sign-in" element={isInitialized ?  <Navigate to="/" replace /> : <Login/>} />

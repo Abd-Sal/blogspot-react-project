@@ -30,6 +30,9 @@ const Navbar = () => {
                                 <li>
                                     <NavLink className={`text-white ${((isActive) =>`${isActive ? 'active' : ''}`)}`} to={'/contact-us'}>Contact Us</NavLink>
                                 </li>
+                                <li>
+                                    <NavLink className={`text-white ${((isActive) =>`${isActive ? 'active' : ''}`)}`} to={'/jobs'}>Jobs</NavLink>
+                                </li>
                             </ul>
                         </div>
                     </Col>

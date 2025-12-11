@@ -552,3 +552,18 @@ a .cate-desc{
 .trans{
     transform: translateX(10%);
 }
+.bg-join-us{
+    background-color: #F3EFFE;
+    background-image: url(assets/join-us.png);
+    background-position: 100% 0%;
+    background-size: 600px 500px;
+    background-repeat: no-repeat;
+}
+.our-benefits-title span{
+    border-bottom: 5px solid var(--main-bg-color);
+}
+.left-hand-side,
+.left-hand-side img
+{
+    height: 100%;
+}
